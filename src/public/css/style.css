@@ -1,0 +1,6 @@
+.card-img-top {
+  display: block; /* Hace que el elemento sea un bloque */
+  margin: 0 auto; /* Centro horizontalmente */
+  width: 80%; /* Ajusta el tamaño de la imagen */
+  height: auto; /* Mantiene la relación de aspecto */
+}
