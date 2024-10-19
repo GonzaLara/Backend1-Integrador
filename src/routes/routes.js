@@ -22,6 +22,7 @@ var subir = multer({
     storage: storage,
 }).single("image");
 
+// USUARIOS
 //insertar un usuario en la base de datos
 router.post('/add', subir, async (req, res) => {
     if (!req.file) {
@@ -187,7 +188,7 @@ router.post('/add-to-cart', async (req, res) => {
         req.session.cart.push({ productId, quantity });
     }
 
-    res.json({ message: 'Producto agregado al carrito correctamente.' });
+    res.json({ message: 'Producto agregado al carrito.' });
 });
 
 // CARRITO
@@ -223,6 +224,44 @@ router.get('/cart', async (req, res) => {
         res.json({ message: err.message });
     }
 });
+
+
+// Eliminar una unidad de un producto del carrito
+router.post('/remove-one', async (req, res) => {
+    const { productId } = req.body;
+
+    if (!req.session.cart) {
+        req.session.cart = [];
+    }
+
+    const productIndex = req.session.cart.findIndex(item => item.productId === productId);
+
+    if (productIndex !== -1) {
+        if (req.session.cart[productIndex].quantity > 1) {
+            req.session.cart[productIndex].quantity -= 1;
+        } else {
+            req.session.cart.splice(productIndex, 1);
+        }
+    }
+
+    res.sendStatus(204);
+});
+
+// Eliminar todos los elementos de un producto del carrito
+router.post('/remove-all', async (req, res) => {
+    const { productId } = req.body;
+
+    if (!req.session.cart) {
+        req.session.cart = [];
+    }
+
+    req.session.cart = req.session.cart.filter(item => item.productId !== productId);
+
+    res.sendStatus(204);  // No content, sin mensaje
+});
+
+
+
 
 
 export default router; 

@@ -9,7 +9,7 @@ import { engine } from 'express-handlebars';
 import Handlebars from 'handlebars';
 
 const app = express();
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.DB_PORT || 4000;
 
 // Configurar para trabajar con JSON 
 app.use(express.json());
