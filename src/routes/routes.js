@@ -1,10 +1,11 @@
-const express = require('express');
+import express from 'express';
+import multer from 'multer';
+import fs from 'fs';
+import path from 'path';
+import User from '../models/users.js';
+import Product from '../models/product.js';
+
 const router = express.Router();
-const User = require('../models/users.js');
-const multer = require('multer');
-const fs = require('fs');
-const path = require('path');
-const Product = require('../models/product.js');
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -48,7 +49,7 @@ router.post('/add', subir, async (req, res) => {
 router.get('/', async (req, res) => {
     try {
         const users = await User.find();
-        res.render('index', {
+        res.render('index.ejs', {
             title: 'Pagina Principal',
             users: users,
         });
@@ -210,4 +211,4 @@ router.get('/cart', async (req, res) => {
 });
 
 
-module.exports = router;
+export default router; 

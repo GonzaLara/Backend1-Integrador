@@ -1,24 +1,39 @@
-require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
-const session = require('express-session');
-const path = require('path');
+import dotenv from 'dotenv';
+import express from 'express';
+import mongoose from 'mongoose';
+import session from 'express-session';
+import path from 'path';
+import routes from './src/routes/routes.js';
+import __dirname from './utils.js';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// Servir archivos estáticos
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Conexión a la base de datos
-mongoose.connect(process.env.DB_URI);
-const db = mongoose.connection;
-db.on('error', (error) => console.log(error));
-db.once('open', () => console.log("Conectado a la base de datos."));
-
-//middlewares
-app.use(express.urlencoded({extended: false}));
+//configurar para trabajar con JSON 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Para poder trabajar con las variables de entorno
+dotenv.config();
+
+// Leer y almacenar variables de entorno
+const URIConexion = process.env.DB_URI;
+
+// Conexion a la base de datos
+mongoose.connect(URIConexion)
+    .then( () => console.log('Conectado a la base de datos.'))
+    .catch((error) => console.error('Error en conexion:', error))
+;
+
+/**
+ * Para indicar en que parte del proyecto van a estar las vistas
+ * Utilizar rutas absolutas para indicar y evitar asuntos de ruteo relativo
+ */
+app.set('views', path.join(__dirname, 'src', 'views'));
+app.set('view engine', 'ejs');
+
+// Setear de manera estatica la carpeta public
+app.use(express.static(path.join(__dirname, 'src', 'public', 'img')));
 
 app.use(session({
     secret: 'my secret key',
@@ -32,15 +47,8 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(express.static('./src/public/img'));
-
-//template engine
-app.set('view engine', 'ejs');
-app.set('views', './src/views');
-
-//route prefix
-app.use("", require('./src/routes/routes.js'))
-
+// Route prefix
+app.use("", routes);
 
 app.listen(PORT, () => {
     console.log(`Servidor iniciado en http://localhost:${PORT}`);
