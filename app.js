@@ -1,22 +1,22 @@
-import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 import session from 'express-session';
 import path from 'path';
 import routes from './src/routes/routes.js';
 import __dirname from './utils.js';
+import { engine } from 'express-handlebars';
+import Handlebars from 'handlebars';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-//configurar para trabajar con JSON 
+// Configurar para trabajar con JSON 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Para poder trabajar con las variables de entorno
+// Cargar las variables de entorno
 dotenv.config();
-
-// Leer y almacenar variables de entorno
 const URIConexion = process.env.DB_URI;
 
 // Conexion a la base de datos
@@ -25,16 +25,34 @@ mongoose.connect(URIConexion)
     .catch((error) => console.error('Error en conexion:', error))
 ;
 
-/**
- * Para indicar en que parte del proyecto van a estar las vistas
- * Utilizar rutas absolutas para indicar y evitar asuntos de ruteo relativo
- */
+// Configurar Handlebars como motor de plantillas
+app.engine('handlebars', engine({
+    layoutsDir: path.join(__dirname, 'src', 'views', 'layouts'),
+    partialsDir: path.join(__dirname, 'src', 'views', 'partials'),
+    defaultLayout: 'main',
+    runtimeOptions: {
+        allowProtoPropertiesByDefault: true,
+        allowProtoMethodsByDefault: true,
+    },
+}));
+
+Handlebars.registerHelper('multiply', function(quantity, price) {
+    const n1 = Number(quantity);
+    const n2 = Number(price);
+
+    if (!isNaN(n1) && !isNaN(n2)) {
+        return (n1 * n2).toFixed(2);
+    }
+    return '0.00';
+});
+
+app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'src', 'views'));
-app.set('view engine', 'ejs');
 
 // Setear de manera estatica la carpeta public
-app.use(express.static(path.join(__dirname, 'src', 'public', 'img')));
+app.use(express.static(path.join(__dirname, 'src', 'public')));
 
+// Configuración de sesiones
 app.use(session({
     secret: 'my secret key',
     saveUninitialized: true,

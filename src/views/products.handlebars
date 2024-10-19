@@ -1,0 +1,31 @@
+<div class="container">
+    <div class="row my-4">
+        <div class="col-lg-12">
+            <h1>Productos Disponibles</h1>
+        </div>
+
+        {{#each products}}
+            <div class="col-md-4">
+                <div class="card carta" style="border: 1px solid white;">
+                    <img src="{{this.image}}" class="card-img-top mx-auto mt-5 cartita" alt="{{this.name}}" style="width: 13rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            {{this.name}}
+                        </h5>
+                        <p class="card-text">Precio: ${{this.price}}</p>
+                        <div class="input-group mb-3 justify-content-center">
+                            <input type="number" id="quantity-{{this._id}}" value="1" min="1" class="form-control barra"  />
+                            <button style="border: 1px solid black; border-radius: 0;" class="btn btn-success boton" type="button" onclick="changeQuantity('{{this._id}}', 1)">+</button>
+                            <button style="border: 1px solid black; border-radius: 0;" class="btn btn-danger boton" type="button" onclick="changeQuantity('{{this._id}}', -1)">-</button>
+                        </div>
+                        <div>
+                            <button class="btn btn-primary" type="button" onclick="addToCart('{{this._id}}')">Carrito</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{/each}}
+    </div>
+</div>
+
+<script src="/js/products.js"></script>

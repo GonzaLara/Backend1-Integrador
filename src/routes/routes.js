@@ -4,17 +4,19 @@ import fs from 'fs';
 import path from 'path';
 import User from '../models/users.js';
 import Product from '../models/product.js';
+import __dirname from '../../utils.js';
 
 const router = express.Router();
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, './src/public/img');
+        cb(null, path.join(__dirname, 'src/public/img'));
     },
     filename: function (req, file, cb) {
         cb(null, file.fieldname + "_" + Date.now() + "_" + file.originalname);
     }
-})
+});
+
 
 var subir = multer({
     storage: storage,
@@ -49,20 +51,25 @@ router.post('/add', subir, async (req, res) => {
 router.get('/', async (req, res) => {
     try {
         const users = await User.find();
-        res.render('index.ejs', {
+        const usersWithIndex = users.map((user, index) => ({
+            ...user.toObject(),
+            displayIndex: index + 1
+        }));
+        res.render('index', {
             title: 'Pagina Principal',
-            users: users,
+            users: usersWithIndex,
         });
     } catch (err) {
         res.json({ message: err.message });
     }
 });
 
+
 router.get('/add', (req, res) => {
     res.render('add_users', { title: "Agregar Usuario" })
 });
 
-//Editar un usuario
+// Editar un usuario
 router.get('/edit/:id', async (req, res) => {
     let id = req.params.id;
     try {
@@ -89,7 +96,7 @@ router.post('/update/:id', subir, async (req, res) => {
         new_image = req.file.filename;
 
         try {
-            const old_image_path = path.resolve('./src/public/img', req.body.old_image);
+            const old_image_path = path.join(__dirname, 'src/public/img', req.body.old_image);
             if (fs.existsSync(old_image_path)) {
                 fs.unlinkSync(old_image_path); 
             }
@@ -124,11 +131,18 @@ router.get('/delete/:id', async (req, res) => {
         const result = await User.findByIdAndDelete(id);
 
         if (result && result.image) {
-            const imagePath = path.resolve('./src/public/img', result.image);
-            try {
-                fs.unlinkSync(imagePath);
-            } catch (err) {
-                console.error('Error al eliminar la imagen:', err.message);
+            const imagePath = path.join(__dirname, 'src/public/img', result.image);
+            console.log(`Intentando eliminar la imagen en: ${imagePath}`);
+            
+            if (fs.existsSync(imagePath)) {
+                try {
+                    fs.unlinkSync(imagePath);
+                    console.log('Imagen eliminada correctamente.');
+                } catch (err) {
+                    console.error('Error al eliminar la imagen:', err.message);
+                }
+            } else {
+                console.error(`El archivo no existe en la ruta: ${imagePath}`);
             }
         }
 
