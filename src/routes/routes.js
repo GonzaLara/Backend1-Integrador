@@ -23,10 +23,10 @@ var subir = multer({
 }).single("image");
 
 // USUARIOS
-//insertar un usuario en la base de datos
+// Insertar un usuario en la base de datos
 router.post('/add', subir, async (req, res) => {
     if (!req.file) {
-        return res.status(400).json({ message: "No se ha subido ningún archivo", type: 'danger' });
+        return res.status(400).json({ message: "No se ha subido ningun archivo", type: 'danger' });
     }
 
     const user = new User({
@@ -126,6 +126,7 @@ router.post('/update/:id', subir, async (req, res) => {
     }
 });
 
+// Eliminar un usuario 
 router.get('/delete/:id', async (req, res) => {
     let id = req.params.id;
     try {
@@ -159,13 +160,24 @@ router.get('/delete/:id', async (req, res) => {
 
 
 // PRODUCTOS
-// Obtener todos los productos
+// Obtener los productos
 router.get('/products', async (req, res) => {
+    const { page = 1, limit = 6 } = req.query;
+
     try {
-        const products = await Product.find();
+        const options = {
+            page: parseInt(page),
+            limit: parseInt(limit),
+        };
+
+        const result = await Product.paginate({}, options);
+        
         res.render('products', {
             title: 'Productos',
-            products: products,
+            products: result.docs,
+            totalPages: result.totalPages,
+            currentPage: result.page,
+            limit: result.limit
         });
     } catch (err) {
         res.json({ message: err.message });
@@ -211,7 +223,7 @@ router.get('/cart', async (req, res) => {
                     quantity: item.quantity
                 };
             } else {
-                console.error(`Producto con ID ${item.productId} no encontrado en la base de datos.`);
+                console.error(`Producto con id ${item.productId} no encontrado en la base de datos.`);
                 return null;
             }
         }).filter(product => product !== null);
@@ -226,7 +238,7 @@ router.get('/cart', async (req, res) => {
 });
 
 
-// Eliminar una unidad de un producto del carrito
+// Eliminar unidad de un producto del carrito
 router.post('/remove-one', async (req, res) => {
     const { productId } = req.body;
 
@@ -247,7 +259,7 @@ router.post('/remove-one', async (req, res) => {
     res.sendStatus(204);
 });
 
-// Eliminar todos los elementos de un producto del carrito
+// Eliminar todas las unidades de un producto del carrito
 router.post('/remove-all', async (req, res) => {
     const { productId } = req.body;
 
@@ -257,11 +269,7 @@ router.post('/remove-all', async (req, res) => {
 
     req.session.cart = req.session.cart.filter(item => item.productId !== productId);
 
-    res.sendStatus(204);  // No content, sin mensaje
+    res.sendStatus(204);
 });
-
-
-
-
 
 export default router; 

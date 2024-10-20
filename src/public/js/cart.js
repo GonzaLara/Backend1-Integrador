@@ -1,5 +1,5 @@
 // Quitar una unidad del carrito
-function removeOne(productId) {
+function quitarUno(productId) {
     fetch('/remove-one', {
         method: 'POST',
         headers: {
@@ -37,7 +37,7 @@ function removeOne(productId) {
 }
 
 // Quitar todas las unidades del carrito
-function removeAll(productId) {
+function quitarTodos(productId) {
     fetch('/remove-all', {
         method: 'POST',
         headers: {

@@ -28,14 +28,14 @@
                             <td class="text-center">$ {{this.price}}</td>
                             <td class="text-center">$ {{multiply this.quantity this.price}}</td>
                             <td class="text-center">
-                                <a class="text-warning espacio" href="#" onclick="removeOne('{{this._id}}')"><i class="fa-solid fa-minus"></i></a>
-                                <a class="text-danger espacio" href="#" onclick="removeAll('{{this._id}}')"><i class="fas fa-trash fa-lg mx-1"></i></a>
+                                <a class="text-warning espacio" href="#" onclick="quitarUno('{{this._id}}')"><i class="fa-solid fa-minus"></i></a>
+                                <a class="text-danger espacio" href="#" onclick="quitarTodos('{{this._id}}')"><i class="fas fa-trash fa-lg mx-1"></i></a>
                             </td>
                         </tr>
                         {{/each}}
                         {{else}}
                         <tr>
-                            <td class="text-center" colspan="7">Carrito vacio.</td>
+                            <td class="text-center" colspan="7">Carrito vacio</td>
                         </tr>
                         {{/if}}
                     </tbody>

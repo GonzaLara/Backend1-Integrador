@@ -8,6 +8,34 @@ import __dirname from './utils.js';
 import { engine } from 'express-handlebars';
 import Handlebars from 'handlebars';
 
+Handlebars.registerHelper('gt', function (a, b) {
+    return a > b;
+});
+
+Handlebars.registerHelper('lt', function (a, b) {
+    return a < b;
+});
+
+Handlebars.registerHelper('eq', function (a, b) {
+    return a === b;
+});
+
+Handlebars.registerHelper('range', (start, end) => {
+    const result = [];
+    for (let i = start; i <= end; i++) {
+        result.push(i);
+    }
+    return result;
+});
+
+Handlebars.registerHelper('dec', function (value) {
+    return value - 1;
+});
+
+Handlebars.registerHelper('inc', function (value) {
+    return value + 1;
+});
+
 const app = express();
 const PORT = 8080;
 
@@ -21,7 +49,7 @@ const URIConexion = process.env.DB_URI;
 
 // Conexion a la base de datos
 mongoose.connect(URIConexion)
-    .then( () => console.log('Conectado a la base de datos.'))
+    .then( () => console.log('Conectado a la base de datos MongoDB Atlas.'))
     .catch((error) => console.error('Error en conexion:', error))
 ;
 
