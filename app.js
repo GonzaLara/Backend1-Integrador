@@ -9,7 +9,7 @@ import { engine } from 'express-handlebars';
 import Handlebars from 'handlebars';
 
 const app = express();
-const PORT = process.env.DB_PORT || 4000;
+const PORT = 8080;
 
 // Configurar para trabajar con JSON 
 app.use(express.json());
@@ -52,7 +52,7 @@ app.set('views', path.join(__dirname, 'src', 'views'));
 // Setear de manera estatica la carpeta public
 app.use(express.static(path.join(__dirname, 'src', 'public')));
 
-// Configuración de sesiones
+// Configuracion de sesiones
 app.use(session({
     secret: 'my secret key',
     saveUninitialized: true,
